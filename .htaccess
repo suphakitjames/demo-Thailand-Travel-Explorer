@@ -1,0 +1,93 @@
+# =====================================================
+# ระบบค้นหาสถานที่ท่องเที่ยว อัจฉริยะ
+# Apache .htaccess Configuration
+# =====================================================
+
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Set base directory
+RewriteBase /new_traval/
+
+# =====================================================
+# Security Settings
+# =====================================================
+
+# Prevent directory browsing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "^(\.htaccess|\.htpasswd|\.git|composer\.(json|lock)|package\.json|README\.md)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Block access to database SQL files
+<FilesMatch "\.(sql)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# =====================================================
+# Security Headers (if mod_headers enabled)
+# =====================================================
+
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # Prevent XSS attacks
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Prevent MIME-type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# =====================================================
+# Performance Optimization
+# =====================================================
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+    AddOutputFilterByType DEFLATE application/javascript application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+
+# =====================================================
+# Character Encoding
+# =====================================================
+
+AddDefaultCharset UTF-8
+
+# =====================================================
+# Error Documents (Optional)
+# =====================================================
+
+# ErrorDocument 404 /new_traval/index.php
